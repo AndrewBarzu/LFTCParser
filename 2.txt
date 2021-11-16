@@ -1,0 +1,12 @@
+program
+decllist cmpdstmt non_zero_digit digit number positive_number single_declaration chained_declaration identifier_list simple_type array_type type stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt whilestmt forstmt assign_list condition RELATION
+IDENTIFIER CONSTANT main bool true false number char string if else for while read write const [ ] { } ( ) : ; , + - * / = <= < == != > >= // && || ++ -- %
+program : int main ( decllist ) cmpdstmt
+decllist : single_declaration , decllist | Epsilon
+single_declaration : type IDENTIFIER
+chained_declaration : type identifier_list
+identifier_list : IDENTIFIER , identifier_list | Epsilon
+simple_type : bool | char | number | string
+array_type : simple_type [ positive_number ]
+non_zero_digit : 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+digit : 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
