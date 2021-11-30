@@ -8,7 +8,7 @@ class RecursiveDescendantParser:
     def __init__(self, grammar: Grammar):
         self._grammar = grammar
 
-    def parse(self, word: Tuple):
+    def parse(self, word: Tuple) -> List[str]:
         config = RecursiveDescendantConfiguration(self._grammar)
         while config.s not in {'f', 'e'}:
             if config.s == 'q':
@@ -31,8 +31,39 @@ class RecursiveDescendantParser:
 
         if config.s == 'e':
             print('Error')
-            return
+            return []
         print('Sequence accepted')
+        return self._makeTreeFromDerivationSeq(config.workingStack)
+
+    def _makeTreeFromDerivationSeq(self, derivationString: List[str]) -> List:
+        result = [(derivationString[0].split('$')[0], -1, -1)]
+        i = 0
+        j = 0
+        while j < len(derivationString) and i < len(result):
+            top = result[i]
+            if top[0] not in self._grammar.N:
+                i += 1
+                continue
+            expandWith = None
+            while True:
+                if '$' not in derivationString[j]:
+                    j += 1
+                    continue
+                nonterminal, productionNumber = derivationString[j].split('$')
+                if nonterminal == top[0]:
+                    expandWith = (nonterminal, productionNumber)
+                    break
+                j += 1
+
+            nonterminal, productionNumber = expandWith
+            productionNumber = int(productionNumber)
+            production = self._grammar.P[(nonterminal, )][productionNumber]
+            for symbol in production:
+                result.append((symbol, i, len(result) + 1))
+            result[-1] = (*result[-1][:-1], -1)
+            i += 1
+        return result
+
 
 class RecursiveDescendantConfiguration:
     def __init__(self, grammar: Grammar):
