@@ -1,6 +1,8 @@
 from collections import deque
 from typing import Tuple, List
 
+import pydot
+
 from Grammar import Grammar
 
 
@@ -8,7 +10,7 @@ class RecursiveDescendantParser:
     def __init__(self, grammar: Grammar):
         self._grammar = grammar
 
-    def parse(self, word: Tuple) -> List[str]:
+    def parse(self, word: Tuple) -> 'ParserOutput':
         config = RecursiveDescendantConfiguration(self._grammar)
         while config.s not in {'f', 'e'}:
             if config.s == 'q':
@@ -31,25 +33,66 @@ class RecursiveDescendantParser:
 
         if config.s == 'e':
             print('Error')
-            return []
+            return ParserOutput(self._grammar, [])
         print('Sequence accepted')
-        return self._makeTreeFromDerivationSeq(config.workingStack)
+        return ParserOutput(self._grammar, config.workingStack)
 
-    def _makeTreeFromDerivationSeq(self, derivationString: List[str]) -> List:
-        result = [(derivationString[0].split('$')[0], -1, -1)]
+    # def _makeTreeFromProdString(self, derivationString: List[str]) -> List:
+    #     result = [(derivationString[0].split('$')[0], -1, -1)]
+    #     i = 0
+    #     j = 0
+    #     while j < len(derivationString) and i < len(result):
+    #         top = result[i]
+    #         if top[0] not in self._grammar.N:
+    #             i += 1
+    #             continue
+    #         expandWith = None
+    #         while True:
+    #             if '$' not in derivationString[j]:
+    #                 j += 1
+    #                 continue
+    #             nonterminal, productionNumber = derivationString[j].split('$')
+    #             if nonterminal == top[0]:
+    #                 expandWith = (nonterminal, productionNumber)
+    #                 j += 1
+    #                 break
+    #             j += 1
+    #
+    #         nonterminal, productionNumber = expandWith
+    #         productionNumber = int(productionNumber)
+    #         production = self._grammar.P[(nonterminal, )][productionNumber]
+    #         added = 1
+    #         for symbol in production:
+    #             result.insert(i + added, (symbol, i, i + 1 + added))
+    #             added += 1
+    #         result[i + added - 1] = (*result[i + added - 1][:-1], -1)
+    #         i += 1
+    #     return result
+
+class ParserOutput:
+    def __init__(self, grammar, productionString):
+        self.tree = self._getTree(grammar, productionString)
+        self.grammar = grammar
+        self.productionString = productionString
+
+    @staticmethod
+    def _getTree(grammar, productionString):
+        if not productionString:
+            return []
+        result = [(productionString[0].split('$')[0], -1, -1)]
         i = 0
         j = 0
-        while j < len(derivationString) and i < len(result):
+        while j < len(productionString) and i < len(result):
             top = result[i]
-            if top[0] not in self._grammar.N:
+            if top[0] not in grammar.N:
                 i += 1
                 continue
             expandWith = None
             while True:
-                if '$' not in derivationString[j]:
+                if '$' not in productionString[j]:
                     j += 1
                     continue
-                nonterminal, productionNumber = derivationString[j].split('$')
+                nonterminal, productionNumber = productionString[j].split('$')
                 if nonterminal == top[0]:
                     expandWith = (nonterminal, productionNumber)
                     j += 1
@@ -58,7 +101,7 @@ class RecursiveDescendantParser:
 
             nonterminal, productionNumber = expandWith
             productionNumber = int(productionNumber)
-            production = self._grammar.P[(nonterminal, )][productionNumber]
+            production = grammar.P[(nonterminal,)][productionNumber]
             added = 1
             for symbol in production:
                 result.insert(i + added, (symbol, i, i + 1 + added))
@@ -66,6 +109,20 @@ class RecursiveDescendantParser:
             result[i + added - 1] = (*result[i + added - 1][:-1], -1)
             i += 1
         return result
+
+    def plotParseTree(self, filename="my_graph.png"):
+        digraph = pydot.Dot("my_graph", graph_type="digraph")
+        nodes = []
+        for i in range(len(self.tree)):
+            idx_as_str = str(i)
+            elem = self.tree[i]
+            node = pydot.Node(idx_as_str, label='"' + elem[0] + '"')
+            digraph.add_node(node)
+            nodes.append(node)
+            if elem[1] != -1:
+                edge = pydot.Edge(str(elem[1]), idx_as_str)
+                digraph.add_edge(edge)
+        digraph.write(filename, format="png")
 
 
 class RecursiveDescendantConfiguration:
