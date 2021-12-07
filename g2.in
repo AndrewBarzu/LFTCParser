@@ -20,7 +20,7 @@ factor : ( expression ) $ IDENTIFIER [ CONSTANT ] $ CONSTANT $ IDENTIFIER
 iostmt : read ( IDENTIFIER ) $ write ( IDENTIFIER ) $ write ( CONSTANT ) $ write ( expression )
 structstmt : cmpdstmt $ ifstmt $ whilestmt $ forstmt
 ifstmt : if boolean_expression cmpdstmt ifstmthelper
-ifstmthelper : Epsilon $ else cmpdstmt
+ifstmthelper : Epsilon $ else stmt
 whilestmt : while condition cmpdstmt
 forstmt : for ( assign_list ; condition ; assign_list ) cmpdstmt
 assign_list : assignstmt , assign_list $ Epsilon
