@@ -1,11 +1,11 @@
 program
-decllist cmpdstmt single_declaration chained_declaration identifier_list simple_type array_type type stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt ifstmthelper whilestmt forstmt assign_list condition RELATION
-IDENTIFIER CONSTANT main bool true false number char string if else for while read write const 0 1 2 3 4 5 6 7 8 9 [ ] { } ( ) : ; , + - * / = <= < == != > >= // && || ++ -- %
-program : number main ( decllist ) cmpdstmt
+decllist cmpdstmt single_declaration boolean_expression chained_declaration identifier_list simple_type array_type type stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt ifstmthelper whilestmt forstmt assign_list condition RELATION
+IDENTIFIER CONSTANT main bool true false number void char string if else for while read write const 0 1 2 3 4 5 6 7 8 9 [ ] { } ( ) : ; , + - * / = <= < == != > >= // && || ++ -- %
+program : void main ( decllist ) cmpdstmt
 decllist : single_declaration , decllist $ Epsilon
 single_declaration : type IDENTIFIER
 chained_declaration : type identifier_list
-identifier_list : IDENTIFIER , identifier_list $ Epsilon
+identifier_list : IDENTIFIER , identifier_list $ IDENTIFIER $ Epsilon
 simple_type : bool $ char $ number $ string
 array_type : simple_type [ CONSTANT ]
 type : simple_type $ array_type
@@ -16,13 +16,14 @@ simplstmt : assignstmt $ iostmt $ chained_declaration
 assignstmt : IDENTIFIER = expression
 expression : expression + term $ expression - term $ term
 term : term * factor $ term / factor $ term // factor $ term % factor $ factor
-factor : ( expression ) $ IDENTIFIER [ CONSTANT ] $ CONSTANT
+factor : ( expression ) $ IDENTIFIER [ CONSTANT ] $ CONSTANT $ IDENTIFIER
 iostmt : read ( IDENTIFIER ) $ write ( IDENTIFIER ) $ write ( CONSTANT ) $ write ( expression )
 structstmt : cmpdstmt $ ifstmt $ whilestmt $ forstmt
-ifstmt : if condition cmpdstmt ifstmthelper
+ifstmt : if boolean_expression cmpdstmt ifstmthelper
 ifstmthelper : Epsilon $ else cmpdstmt
 whilestmt : while condition cmpdstmt
 forstmt : for ( assign_list ; condition ; assign_list ) cmpdstmt
 assign_list : assignstmt , assign_list $ Epsilon
 condition : expression RELATION expression
+boolean_expression : condition RELATION boolean_expression $ condition $ IDENTIFIER $ CONSTANT
 RELATION : < $ <= $ == $ != $ >= $ > $ && $ ||

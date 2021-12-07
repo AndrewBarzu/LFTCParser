@@ -9,15 +9,23 @@ from Grammar import Grammar
 from Parser import RecursiveDescendantParser
 
 if __name__ == '__main__':
-    myGrammar = Grammar.readFromFile("g1.in")
+    myGrammar = Grammar.readFromFile("g2.in")
+    myGrammar = Grammar.removeLeftRecursion(myGrammar)
 
     parser = RecursiveDescendantParser(myGrammar)
 
-    print(parser.parse(("b", "b", "a", "c")))
-    print(parser.parse(("b", "a", "c")))
-    print(parser.parse(("a",)))
-    print(parser.parse(("b", "a")))
-    print(parser.parse(("c",)))
+    # print(parser.parse(("b", "b", "a", "c")))
+    # print(parser.parse(("b", "a", "c")))
+    # print(parser.parse(("a",)))
+    # print(parser.parse(("b", "a")))
+    # print(parser.parse(("a", "c",)))
+    program = []
+    with open("test.in", "r") as f:
+        for line in f:
+            if line != "":
+                program.append(line.strip())
+    program = tuple(program)
+    print(parser.parse(program))
 
 
     # while True:

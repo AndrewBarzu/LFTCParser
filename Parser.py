@@ -52,15 +52,18 @@ class RecursiveDescendantParser:
                 nonterminal, productionNumber = derivationString[j].split('$')
                 if nonterminal == top[0]:
                     expandWith = (nonterminal, productionNumber)
+                    j += 1
                     break
                 j += 1
 
             nonterminal, productionNumber = expandWith
             productionNumber = int(productionNumber)
             production = self._grammar.P[(nonterminal, )][productionNumber]
+            added = 1
             for symbol in production:
-                result.append((symbol, i, len(result) + 1))
-            result[-1] = (*result[-1][:-1], -1)
+                result.insert(i + added, (symbol, i, i + 1 + added))
+                added += 1
+            result[i + added - 1] = (*result[i + added - 1][:-1], -1)
             i += 1
         return result
 
@@ -78,7 +81,7 @@ class RecursiveDescendantConfiguration:
         production = self._grammar.getProds((currentSymbol, ))
         if production[0] != ('Epsilon', ):
             self.inputStack += reversed(production[0])
-        self.workingStack.append(currentSymbol[0] + "$0")
+        self.workingStack.append(currentSymbol + "$0")
 
     def advance(self):
         self.i += 1
@@ -100,8 +103,9 @@ class RecursiveDescendantConfiguration:
         productions = self._grammar.getProds((nonterminal, ))
 
         currentProduction = productions[productionNumber]
-        for _ in currentProduction:
-            _ = self.inputStack.pop()
+        for prod in currentProduction:
+            if prod != "Epsilon":
+                _ = self.inputStack.pop()
 
         if productionNumber < len(productions) - 1:
             newProd = productions[productionNumber + 1]
