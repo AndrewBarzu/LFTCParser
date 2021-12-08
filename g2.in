@@ -1,11 +1,15 @@
 program
-decllist cmpdstmt single_declaration boolean_expression chained_declaration identifier_list simple_type array_type type stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt ifstmthelper whilestmt forstmt assign_list condition RELATION
+decllist cmpdstmt single_declaration boolean_expression constants constant_list array_constant identifier_helper chained_declaration identifier_list simple_type array_type type stmtlist stmt simplstmt assignstmt expression term factor iostmt structstmt ifstmt ifstmthelper whilestmt forstmt assign_list condition RELATION
 IDENTIFIER CONSTANT main bool true false number void char string if else for while read write const 0 1 2 3 4 5 6 7 8 9 [ ] { } ( ) : ; , + - * / = <= < == != > >= // && || ++ -- %
 program : void main ( decllist ) cmpdstmt
 decllist : single_declaration , decllist $ Epsilon
 single_declaration : type IDENTIFIER
 chained_declaration : type identifier_list
-identifier_list : IDENTIFIER , identifier_list $ IDENTIFIER $ Epsilon
+identifier_list : identifier_helper , identifier_list $ identifier_helper
+identifier_helper : IDENTIFIER $ IDENTIFIER = constants $ IDENTIFIER = IDENTIFIER
+constants : CONSTANT $ array_constant
+array_constant : [ constant_list ]
+constant_list : CONSTANT , constant_list $ CONSTANT $ Epsilon
 simple_type : bool $ char $ number $ string
 array_type : simple_type [ CONSTANT ]
 type : simple_type $ array_type
@@ -16,7 +20,7 @@ simplstmt : assignstmt $ iostmt $ chained_declaration
 assignstmt : IDENTIFIER = expression
 expression : expression + term $ expression - term $ term
 term : term * factor $ term / factor $ term // factor $ term % factor $ factor
-factor : ( expression ) $ IDENTIFIER [ CONSTANT ] $ CONSTANT $ IDENTIFIER
+factor : ( expression ) $ IDENTIFIER [ expression ] $ constants $ IDENTIFIER
 iostmt : read ( IDENTIFIER ) $ write ( IDENTIFIER ) $ write ( CONSTANT ) $ write ( expression )
 structstmt : cmpdstmt $ ifstmt $ whilestmt $ forstmt
 ifstmt : if boolean_expression cmpdstmt ifstmthelper

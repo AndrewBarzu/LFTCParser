@@ -9,25 +9,40 @@ import pydot
 from Parser import RecursiveDescendantParser
 
 if __name__ == '__main__':
-    myGrammar = Grammar.readFromFile("g1.in")
+    myGrammar = Grammar.readFromFile("g2.in")
     myGrammar = Grammar.removeLeftRecursion(myGrammar)
 
     parser = RecursiveDescendantParser(myGrammar)
 
-    parser.parse(("b", "b", "a", "c")).plotParseTree("g1_1.png")
-    parser.parse(("b", "a", "c")).plotParseTree("g1_2.png")
-    parser.parse(("a",)).plotParseTree("g1_3.png")
-    parser.parse(("b", "a")).plotParseTree("g1_4.png")
-    parser.parse(("a", "c",)).plotParseTree("g1_5.png")
+    # parser.parse(("b", "b", "a", "c")).plotParseTree("g1_1.png")
+    # parser.parse(("b", "a", "c")).plotParseTree("g1_2.png")
+    # parser.parse(("a",)).plotParseTree("g1_3.png")
+    # parser.parse(("b", "a")).plotParseTree("g1_4.png")
+    # parser.parse(("a", "c",)).plotParseTree("g1_5.png")
 
-    # program = []
-    # with open("test.in", "r") as f:
-    #     for line in f:
-    #         if line != "":
-    #             program.append(line.strip())
-    # program = tuple(program)
-    # parse_tree = parser.parse(program)
-    # parse_tree.plotParseTree("test.png")
+    program = []
+    with open("1.in", "r") as f:
+        for line in f:
+            if line != "":
+                program.append(line.strip())
+    program = tuple(program)
+    parser.parse(program).plotParseTree("1.png")
+
+    program = []
+    with open("2.in", "r") as f:
+        for line in f:
+            if line != "":
+                program.append(line.strip())
+    program = tuple(program)
+    parser.parse(program).plotParseTree("2.png")
+
+    program = []
+    with open("3.in", "r") as f:
+        for line in f:
+            if line != "":
+                program.append(line.strip())
+    program = tuple(program)
+    parser.parse(program).plotParseTree("3.png")
 
     # digraph = pydot.Dot("my_graph", graph_type="digraph")
     # nodes = []
@@ -40,7 +55,7 @@ if __name__ == '__main__':
     #     if elem[1] != -1:
     #         edge = pydot.Edge(str(elem[1]), idx_as_str)
     #         digraph.add_edge(edge)
-    # digraph.write("test.png", format="png")
+    # digraph.write("1.png", format="png")
 
 
 

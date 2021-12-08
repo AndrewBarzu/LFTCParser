@@ -126,7 +126,7 @@ class Grammar:
                 key = []
                 while production[i] != ":":
                     if production[i] not in g.Sigma and production[i] not in g.N:
-                        raise SymbolNotDefined()
+                        raise SymbolNotDefined(production)
                     key.append(production[i])
                     i += 1
 
